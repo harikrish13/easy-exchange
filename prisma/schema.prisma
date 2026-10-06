@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum ListingStatus {
+  Available
+  InTrade
+  Traded
+}
+
+enum TradeOfferStatus {
+  Pending
+  Accepted
+  Declined
+  Cancelled
+  Completed
+}
+
+enum Condition {
+  Mint
+  NearMint
+  Excellent
+  Good
+  Fair
+}
+
+enum CancelledBy {
+  PROPOSER
+  SYSTEM
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  displayName  String
+  city         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  listings        Listing[]
+  offersProposed  TradeOffer[] @relation("TradeOfferProposer")
+  offersReceived  TradeOffer[] @relation("TradeOfferReceiver")
+  ratingsGiven    Rating[]     @relation("RatingRater")
+  ratingsReceived Rating[]     @relation("RatingRated")
+}
+
+model Category {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+
+  listings Listing[]
+}
+
+model Listing {
+  id                  String        @id @default(cuid())
+  ownerId             String
+  categoryId          String
+  title               String
+  description         String
+  condition           Condition
+  conditionNotes      String?
+  estimatedValueCents Int?
+  lookingFor          String?
+  status              ListingStatus @default(Available)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  owner            User             @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  category         Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  photos           ListingPhoto[]
+  tradeOfferItems  TradeOfferItem[]
+  targetedByOffers TradeOffer[]
+}
+
+model ListingPhoto {
+  id          String   @id @default(cuid())
+  listingId   String
+  storagePath String
+  sortOrder   Int
+  mimeType    String
+  createdAt   DateTime @default(now())
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Restrict)
+}
+
+model TradeOffer {
+  id                 String           @id @default(cuid())
+  proposerId         String
+  receiverId         String
+  targetListingId    String
+  status             TradeOfferStatus @default(Pending)
+  cancelledBy        CancelledBy?
+  proposerReceivedAt DateTime?
+  receiverReceivedAt DateTime?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  proposer      User             @relation("TradeOfferProposer", fields: [proposerId], references: [id], onDelete: Restrict)
+  receiver      User             @relation("TradeOfferReceiver", fields: [receiverId], references: [id], onDelete: Restrict)
+  targetListing Listing          @relation(fields: [targetListingId], references: [id], onDelete: Restrict)
+  items         TradeOfferItem[]
+  ratings       Rating[]
+}
+
+model TradeOfferItem {
+  id           String @id @default(cuid())
+  tradeOfferId String
+  listingId    String
+
+  tradeOffer TradeOffer @relation(fields: [tradeOfferId], references: [id], onDelete: Restrict)
+  listing    Listing    @relation(fields: [listingId], references: [id], onDelete: Restrict)
+
+  @@unique([tradeOfferId, listingId])
+}
+
+model Rating {
+  id           String   @id @default(cuid())
+  tradeOfferId String
+  raterUserId  String
+  ratedUserId  String
+  score        Int
+  comment      String?
+  createdAt    DateTime @default(now())
+
+  tradeOffer TradeOffer @relation(fields: [tradeOfferId], references: [id], onDelete: Restrict)
+  rater      User       @relation("RatingRater", fields: [raterUserId], references: [id], onDelete: Restrict)
+  rated      User       @relation("RatingRated", fields: [ratedUserId], references: [id], onDelete: Restrict)
+
+  @@unique([tradeOfferId, raterUserId])
+}

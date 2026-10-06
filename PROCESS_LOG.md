@@ -268,6 +268,93 @@ what the AI produced, and what I accepted, changed, or rejected and why.
 
 ---
 
+## Entry 08: Architecture spec (first use of spec-writer)
+- **Date:** Oct 6, 2026
+- **Phase:** Specs
+- **Tool / Skill used:** `/spec-writer` (custom skill)
+- **What happened:** The skill checked that docs/plan.md was Approved, then
+  asked 7 architecture questions instead of guessing (mutations, src/ layout,
+  validation, unit tests, integration tests, photo storage, Auth.js version).
+- **My answers:** Server Actions; src/ layout; Zod; Vitest; Vitest + separate
+  SQLite test DB, no browser E2E; gitignored uploads/ via Route Handler;
+  Auth.js v5 Credentials + JWT, pinned, bcrypt.
+- **What the AI produced:** 13 architectural rules (00-R1–R13), each verified
+  by an inspectable acceptance criterion.
+- **Review:** Approved without changes. Open questions deferred to the specs
+  that own them.
+
+---
+
+## Entry 09: Data model spec
+- **Date:** Oct 6, 2026
+- **Phase:** Specs
+- **Tool / Skill used:** `/spec-writer`
+- **What happened:** The skill asked 8 schema questions (completed state, received
+  flags, offered items, categories, IDs, cancel provenance, value storage, rating
+  uniqueness). I answered all 8.
+- **Review fixes (manual):** Added `@default(Pending)` on offer status; required
+  `receiverId` to be set server-side from the target listing owner; added an open
+  question about Prisma enum support on SQLite.
+
+---
+
+## Entry 10: Specs 02–07 written by parallel agents
+- **Date:** Oct 6, 2026
+- **Phase:** Specs
+- **Tool / Skill used:** `/spec-writer` in 6 parallel agent tabs
+- **What happened:** Ran one agent per spec at the same time, each in a fresh
+  context. Answered each agent's clarifying questions from the plan
+  (02: profile edits, password rules, session payload; 04: own listings,
+  guest access, catalog contents, detail and photo visibility).
+- **Why parallel:** Each spec mainly depends on the plan, 00, and 01, so they
+  could be drafted independently, saving significant time.
+- **Cross-spec conflicts:** Because specs were written in parallel, 03 and 04
+  disagreed on photo visibility, and 04 assumed a "My listings" page 03 never
+  defined. The agents flagged these as open questions instead of guessing
+  (my cross-spec consistency rule in spec-writer).
+- **Review of 05:** Found 3 rules without acceptance criteria (05-R1, R7, R17),
+  breaking the template's coverage rule. Added 05-AC14–16 by hand.
+- **Tradeoff learned:** Parallel agents are faster but need a reconciliation
+  pass. Specs that look independent still share assumptions.
+
+---
+
+## Entry 11: Implementation skill + imported skill
+- **Date:** Oct 6, 2026
+- **Phase:** Skills
+- **Tool / Skill used:** Manual creation; imported `frontend-design` from
+  Anthropic's public skills repo (github.com/anthropics/skills), with its LICENSE
+- **What I did:** Wrote `implement-from-spec` (approval check, tests first,
+  spec-only scope, self-logging). Imported `frontend-design` and read it before
+  enabling, since a third-party skill is instructions my agent will follow.
+- **Review findings:** The skill asks the agent to confirm the product subject
+  with the client before designing. My specs already define it, so I give
+  design direction in the implementation prompt. It auto-invokes on UI work
+  (no `disable-model-invocation`), which suits design guidance. My own skills
+  are manual-only because they control workflow.
+---
+
+
+## Entry 12: Slice 1 scaffold, schema, and seed
+- **Date:** Oct 6, 2026
+- **Phase:** Implementation
+- **Tool / Skill used:** `/implement-from-spec`
+- **Prompt (verbatim):**
+  /implement-from-spec Slice 1: project scaffold per 00-architecture.md,
+  Prisma schema per 01-data-model.md, and seed data per 07-seed-data.md.
+  Scaffold Next.js in the current repo root (do not create a subfolder).
+  Create a .env with DATABASE_URL and AUTH_SECRET, and make sure .env is
+  gitignored. Add npm scripts for dev, test, db:seed, and typecheck.
+- **What the AI produced (summary):** Next.js app in the repo root; Prisma 7
+  schema and init migration; `prisma/seed.ts` with the demo catalog and JPEG
+  fixtures copied into `uploads/`; Auth.js v5 Credentials + JWT pinned at
+  `next-auth@5.0.0-beta.32`; `.env` gitignored. `npm test` 22 passed.
+  `npm run typecheck` passed. `npm run db:seed` passed, including a second
+  run that removed an extra listing and an extra uploads folder.
+- **What I changed or rejected, and why:**
+- **Lesson learned:**
+
+---
 
 ## Entry template (copy for each new step)
 - **Date:**
