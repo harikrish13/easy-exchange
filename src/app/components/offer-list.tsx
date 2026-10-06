@@ -27,6 +27,9 @@ export function OfferList({ offers }: { offers: OfferView[] }) {
               ))}
             </p>
             {offer.cancelLabel ? <p>{offer.cancelLabel}</p> : null}
+            <p>
+              <a href={`/offers/${offer.id}`}>View trade</a>
+            </p>
             {offer.canAccept || offer.canDecline || offer.canCancel ? (
               <div className="offer-actions">
                 {offer.canAccept ? <OfferDecision offerId={offer.id} kind="accept" /> : null}

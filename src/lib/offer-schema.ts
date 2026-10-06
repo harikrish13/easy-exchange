@@ -15,3 +15,15 @@ export const tradeOfferIdSchema = z.object({
 });
 
 export type TradeOfferIdInput = z.infer<typeof tradeOfferIdSchema>;
+
+export const ratingSchema = z.object({
+  tradeOfferId: z.string().min(1, "Choose an offer."),
+  score: z.coerce
+    .number()
+    .int("Choose a rating from 1 to 5.")
+    .min(1, "Choose a rating from 1 to 5.")
+    .max(5, "Choose a rating from 1 to 5."),
+  comment: z.string().max(500, "Comment must be 500 characters or fewer."),
+});
+
+export type RatingInput = z.infer<typeof ratingSchema>;

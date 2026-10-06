@@ -409,6 +409,32 @@ what the AI produced, and what I accepted, changed, or rejected and why.
 
 ---
 
+## Entry 15: Slice 4 trade completion and ratings
+- **Date:** Oct 6, 2026
+- **Phase:** Implementation
+- **Tool / Skill used:** `/implement-from-spec`
+- **Prompt (verbatim):**
+  /implement-from-spec Slice 4: 06-trade-completion-and-ratings.md. Build
+  the trade offer detail page with "Mark received" for each party while
+  Accepted, completion when both confirm (listings become Traded), and
+  the rating form shown only after Completed.
+- **What the AI produced (summary):** Domain rules in `src/domain/completion.ts`
+  with tests written first. Mark received sets one party's timestamp;
+  the second mark sets the offer to Completed and involved listings to
+  Traded in one transaction. A repeat mark does not change timestamps.
+  Cancel and decline after Accept or Completed are rejected. Optional
+  1–5 rating with a comment of at most 500 characters, one per party,
+  only after Completed, with no update or delete action. Trade detail
+  is `/offers/[id]`: "Mark received" while Accepted and not yet marked;
+  the rating form only after Completed and only if that party has not
+  rated. `npm test` 104 passed. `npm run typecheck` passed. Guest trade
+  and offer history pages checked over HTTP on localhost:3000. Signed-in
+  Mark received and rating clicks were not exercised in a browser.
+- **What I changed or rejected, and why:**
+- **Lesson learned:**
+
+---
+
 ## Entry template (copy for each new step)
 - **Date:**
 - **Phase:** Planning / Specs / Skills / Implementation / Review

@@ -1,3 +1,4 @@
+import { rejectPostAcceptChange } from "@/domain/completion";
 import { DomainError } from "@/domain/errors";
 import {
   acceptOffer,
@@ -98,6 +99,9 @@ export async function declineTrade(actorId: string, tradeOfferId: string): Promi
       include: { items: { select: { listingId: true } } },
     });
     if (!offer) throw new DomainError("NOT_FOUND", "That offer doesn't exist.");
+    if (offer.status === "Accepted" || offer.status === "Completed") {
+      rejectPostAcceptChange(offer.status);
+    }
     const next = declineOffer(toState(offer), actorId);
     await tx.tradeOffer.update({
       where: { id: offer.id },
@@ -113,6 +117,9 @@ export async function cancelTrade(actorId: string, tradeOfferId: string): Promis
       include: { items: { select: { listingId: true } } },
     });
     if (!offer) throw new DomainError("NOT_FOUND", "That offer doesn't exist.");
+    if (offer.status === "Accepted" || offer.status === "Completed") {
+      rejectPostAcceptChange(offer.status);
+    }
     const next = cancelOfferByProposer(toState(offer), actorId);
     await tx.tradeOffer.update({
       where: { id: offer.id },
