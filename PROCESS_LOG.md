@@ -356,6 +356,34 @@ what the AI produced, and what I accepted, changed, or rejected and why.
 
 ---
 
+## Entry 13: Slice 2 auth, listings, and browse
+- **Date:** Oct 6, 2026
+- **Phase:** Implementation
+- **Tool / Skill used:** `/implement-from-spec`, `frontend-design`
+- **Prompt (verbatim):**
+  /implement-from-spec Slice 2: 02-auth-and-users.md, 03-listings.md,
+  04-browse.md. Use the frontend-design skill for the UI. Design
+  direction (no need to confirm): a collector's display-case feel for
+  casual collectors trading cards, coins, action figures, and comics.
+  Warm, tactile, and clear; listings should feel like items on a shelf.
+  Keep the design simple enough to build in this slice. Replace the
+  default Next.js home page with the catalog.
+
+  COMPLETE THE SLICE 2 RUN AND AUTO APPROVE
+- **What the AI produced (summary):** Sign-up, sign-in, and sign-out;
+  listing create, edit, delete, and My listings with the edit/delete lock
+  and photo upload under `uploads/`; public catalog at `/` with category
+  filter and listing detail. Display-case UI: putty wall, felt shelf,
+  walnut rail, Fraunces and Atkinson Hyperlegible. Open questions decided
+  without a stop: sign-up does not start a session; email is stored
+  lowercased. `npm test` 62 passed. `npm run typecheck` passed. Guest
+  pages checked over HTTP on localhost:3000 (catalog, filters, detail,
+  Make offer, photo, 404). Signed-in clicks were not exercised in a browser.
+- **What I changed or rejected, and why:**
+- **Lesson learned:**
+
+---
+
 ## Entry template (copy for each new step)
 - **Date:**
 - **Phase:** Planning / Specs / Skills / Implementation / Review

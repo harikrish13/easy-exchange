@@ -1,8 +1,7 @@
 import NextAuth from "next-auth";
-import type { Session } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcrypt";
-import { prisma } from "./db";
+import { publicSession } from "@/domain/session";
+import { authenticateCredentials } from "./users";
 
 if (!process.env.AUTH_SECRET) {
   throw new Error("AUTH_SECRET is required");
@@ -17,51 +16,45 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      authorize: async (credentials) => {
-        const email = credentials?.email;
-        const password = credentials?.password;
-        if (typeof email !== "string" || typeof password !== "string") {
-          return null;
-        }
-
-        const user = await prisma.user.findUnique({
-          where: { email: email.trim().toLowerCase() },
-        });
-        if (!user) {
-          return null;
-        }
-
-        const matches = await bcrypt.compare(password, user.passwordHash);
-        if (!matches) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          displayName: user.displayName,
-        };
-      },
+      authorize: async (credentials) =>
+        authenticateCredentials(credentials?.email, credentials?.password),
     }),
   ],
   callbacks: {
     jwt({ token, user }) {
-      if (user) {
-        token.id = user.id ?? "";
-        token.displayName = user.displayName;
+      if (user?.id && user.displayName) {
+        const publicUser = publicSession({
+          id: user.id,
+          displayName: user.displayName,
+          email: "email" in user ? user.email : undefined,
+        });
+        token.id = publicUser.id;
+        token.displayName = publicUser.displayName;
       }
+      delete token.email;
       return token;
     },
     session({ session, token }) {
-      if (typeof token.id !== "string" || typeof token.displayName !== "string") {
-        return session;
+      if (
+        typeof token.id !== "string" ||
+        typeof token.displayName !== "string" ||
+        token.id.length === 0 ||
+        token.displayName.length === 0
+      ) {
+        return {
+          expires: session.expires,
+          user: { id: "", displayName: "" },
+        };
       }
+
       return {
-        ...session,
-        user: {
+        expires: session.expires,
+        user: publicSession({
           id: token.id,
           displayName: token.displayName,
-        },
-      } as Session;
+          email: token.email,
+        }),
+      };
     },
   },
 });
