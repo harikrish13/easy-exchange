@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import { makeOfferHref, showMakeOffer } from "@/domain/listings";
 import { getListingDetail } from "@/server/catalog";
 import { auth } from "@/server/auth";
+import { MakeOfferForm } from "../../components/make-offer-form";
 import { ListingImage } from "../../components/listing-image";
+import { listAvailableToOffer } from "@/server/offers";
 
 export async function generateMetadata({
   params,
@@ -32,6 +34,8 @@ export default async function ListingPage({
     ownerId: listing.ownerId,
   });
   const offerHref = makeOfferHref({ viewerId, listingId: listing.id });
+  const offerChoices =
+    offerVisible && viewerId ? await listAvailableToOffer(viewerId) : [];
   const listedBy = listing.ownerCity
     ? `Listed by ${listing.ownerDisplayName} in ${listing.ownerCity}`
     : `Listed by ${listing.ownerDisplayName}`;
@@ -92,9 +96,7 @@ export default async function ListingPage({
                 Make offer
               </a>
             ) : (
-              <button className="button" type="button">
-                Make offer
-              </button>
+              <MakeOfferForm targetListingId={listing.id} listings={offerChoices} />
             )
           ) : null}
         </div>

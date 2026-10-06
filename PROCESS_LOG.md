@@ -384,6 +384,31 @@ what the AI produced, and what I accepted, changed, or rejected and why.
 
 ---
 
+## Entry 14: Slice 3 trade offers
+- **Date:** Oct 6, 2026
+- **Phase:** Implementation
+- **Tool / Skill used:** `/implement-from-spec`
+- **Prompt (verbatim):**
+  /implement-from-spec  Slice 3: 05-trade-offers.md. Write the domain
+  tests first. 05-AC10 (conflict auto-cancel) must have its own test,
+  including the unrelated offer that stays Pending. Then build the
+  propose, accept, decline, and cancel Server Actions, the "Make offer"
+  flow on the listing detail page, and the incoming offers and offer
+  history pages. Accept must run in a single database transaction.
+- **What the AI produced (summary):** Domain tests in `src/domain/offers.test.ts`
+  failed first because the module was missing, then `src/domain/offers.ts`
+  passed them, including a dedicated 05-AC10 test where P2 and P3 become
+  Cancelled with cancelledBy SYSTEM and P4 stays Pending. Propose, accept,
+  decline, and cancel Server Actions persist through Prisma. Accept uses one
+  `prisma.$transaction`. Make offer on listing detail, `/offers/incoming`,
+  and `/offers` history. `npm test` 89 passed. `npm run typecheck` passed.
+  Guest Make offer, incoming, and history pages checked over HTTP.
+  Signed-in propose/accept clicks were not exercised in a browser.
+- **What I changed or rejected, and why:**
+- **Lesson learned:**
+
+---
+
 ## Entry template (copy for each new step)
 - **Date:**
 - **Phase:** Planning / Specs / Skills / Implementation / Review

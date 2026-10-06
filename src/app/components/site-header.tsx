@@ -16,6 +16,8 @@ export async function SiteHeader() {
         {user ? (
           <>
             <a href="/listings/new">List an item</a>
+            <a href="/offers/incoming">Incoming</a>
+            <a href="/offers">Offers</a>
             <span className="who">{user.displayName}</span>
             <form action={signOutAction}>
               <button className="text-button" type="submit">

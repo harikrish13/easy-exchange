@@ -337,10 +337,40 @@ textarea {
   height: 96px;
 }
 
-.mine-actions {
+.mine-actions,
+.offer-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
+  align-items: center;
+}
+
+.offer-list {
+  display: grid;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.offer {
+  display: grid;
+  gap: 0.4rem;
+  background: var(--paper);
+  padding: 0.9rem 1rem;
+}
+
+.choices {
+  border: 1px solid var(--line);
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.75rem;
+}
+
+.check {
+  display: flex;
+  gap: 0.5rem;
   align-items: center;
 }
 
