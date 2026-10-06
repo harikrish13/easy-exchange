@@ -1,0 +1,38 @@
+---
+description: Course workflow discipline for easy-exchange (planning → specs → code)
+alwaysApply: true
+---
+
+# Easy-Exchange Workflow
+
+This is a goods-exchange web app for an AI-assisted software engineering course. Process matters more than product. Do not assume a tech stack; that is decided during planning.
+
+## Environment
+
+- OS: Windows. Shell: PowerShell only.
+- Never use bash syntax (`&&`, `export`, heredocs, etc.). Use PowerShell equivalents.
+
+## Workflow Order
+
+1. Planning → 2. Specs in `docs/specs/` → 3. Implementation
+- Every spec file begins with a status line: `Status: Draft` or `Status: Approved`.
+- Only the user changes a spec to `Approved`. Never mark a spec approved yourself.
+- Do **not** write application code unless the relevant spec in `docs/specs/` is marked `Status: Approved`.
+- If asked to code without one: stop and name the missing or unapproved spec.
+
+## Ambiguity
+
+When requirements are unclear, ask clarifying questions before acting. Do not guess.
+
+## Scope
+
+- Implement only what the referenced spec describes.
+- Suggest extras separately; do not build them unless asked.
+
+## Change Size
+
+Prefer small, focused changes. End each response with a short summary of what changed and why.
+
+## Traceability
+
+After any significant step, remind the user to add an entry to `PROCESS_LOG.md`.
